@@ -1,28 +1,19 @@
 import asyncio
-import json
 import logging
 import os
-import random
-import re
-import time
-import uuid
-from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
-from typing import Optional, List
+from typing import Optional
 
 import databases
 import discord
 import pytz
-from apscheduler.jobstores.base import JobLookupError
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.date import DateTrigger
-from discord import app_commands, MessageType, Member
+from discord import app_commands
 from loguru import logger
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from consts import CONSTS
-from models import giveaways, metadata, user_score, user_info, score_exchange
+from models import metadata, user_score, user_info, score_exchange
 from settings import SETTINGS
 
 # 本体设置，服务器ID
@@ -250,13 +241,21 @@ async def shop(interaction: discord.Interaction):
     # 从数据库中查看积分兑换表
     result = await get_all_score_exchange()
     # 发送频道的信息
-    result_str = "积分兑换列表:\n"
+    result_str = "积分兑换列表:\n" \
+                 "<description>\n" \
+                 "\ex to buy an item\n" \
+
     # 输出一个表格形式的文字，显示积分兑换表的详情
     for item in result:
         # 使用rjust右对齐，积分在最后
         details_item = f"{item['id']}. {item['details']}".ljust(30, '-')
         result_str += f'{details_item} {item["score"]}\n'
-    await interaction.response.send_message(result_str)
+
+    # Create Embed message
+    embed = discord.Embed(color=0x87cefa)
+    embed.add_field(name="积分兑换列表:",
+                        value=result_str)
+    await interaction.response.send_message(embed)
 
 
 @client.tree.command()

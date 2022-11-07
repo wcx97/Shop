@@ -241,9 +241,9 @@ async def shop(interaction: discord.Interaction):
     # 从数据库中查看积分兑换表
     result = await get_all_score_exchange()
     # 发送频道的信息
-    result_str = "积分兑换列表:\n" \
-                 "<description>\n" \
+    result_str = "<description>\n" \
                  "\ex to buy an item\n" \
+                 "════════════════════════════════\n"
 
     # 输出一个表格形式的文字，显示积分兑换表的详情
     for item in result:
@@ -255,7 +255,7 @@ async def shop(interaction: discord.Interaction):
     embed = discord.Embed(color=0x87cefa)
     embed.add_field(name="积分兑换列表:",
                         value=result_str)
-    await interaction.response.send_message(embed)
+    await interaction.response.send_message(embed=embed)
 
 
 @client.tree.command()
